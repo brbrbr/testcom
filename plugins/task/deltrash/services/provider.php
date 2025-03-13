@@ -1,11 +1,11 @@
 <?php
 
 /**
- * @package    plg_task_deltrash
+ * @package     Joomla.Plugin
  * @subpackage  Task.Deltrash
  *
- * @copyright 2025 Bram Brambring (https://brambring.nl)
- * @license   GNU General Public License version 3 or later;
+ * @copyright   (C) 2025 Bram Brambring. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 \defined('_JEXEC') or die;
