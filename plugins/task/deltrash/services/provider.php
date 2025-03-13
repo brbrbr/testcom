@@ -4,7 +4,7 @@
  * @package     Joomla.Plugin
  * @subpackage  Task.Deltrash
  *
- * @copyright   (C) 2023 Alikon. All rights reserved.
+ * @copyright   (C) 2023 Bram Brambring. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 

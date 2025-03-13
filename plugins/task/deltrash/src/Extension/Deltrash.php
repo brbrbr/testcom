@@ -4,8 +4,8 @@
  * @package     Joomla.Plugins
  * @subpackage  Task.DelTrash
  *
- * @copyright   Copyright (C) 2021 Alikon. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @copyright   Copyright (C) 2025 Bram Brambring (https://brambring.nl)
+ * @license     GNU General Public License version 3 or later;
  */
 
 namespace Joomla\Plugin\Task\Deltrash\Extension;
