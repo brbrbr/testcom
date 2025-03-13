@@ -3,11 +3,11 @@
 declare(strict_types=1);
 
 /**
- * @package    Brambring.Plugins
+ * @package    plg_task_deltrash
  * @subpackage Tasks.DelTrash
- * @version    __DEPLOY_VERSION__
- * @copyright  2025 Bram Brambring (https://brambring.nl)
- * @license    GNU General Public License version 3 or later;
+ * @version    25.52.1
+ * @copyright 2025 Bram Brambring (https://brambring.nl)
+ * @license   GNU General Public License version 3 or later;
  */
 
 // phpcs:disable PSR1.Files.SideEffects
@@ -38,26 +38,26 @@ return new class() implements
                 InstallerScriptInterface {
                 // phpcs:enable PSR12.Classes.AnonClassDeclaration
                 /**
-                 * @since  __DEPLOY_VERSION__
+                 * @since  25.52.1
                  */
                 private string $minimumJoomlaVersion = '5.2';
                 /**
-                 * @since  __DEPLOY_VERSION__
+                 * @since  25.52.1
                  */
                 private $minimumPHPVersion    = '8.2';
 
                 /**
-                 * @since  __DEPLOY_VERSION__
+                 * @since  25.52.1
                  */
                 private DatabaseInterface $db;
 
                 /**
-                 * @since  __DEPLOY_VERSION__
+                 * @since  25.52.1
                  */
                 private CMSApplicationInterface $app;
 
                 /**
-                 * @since  __DEPLOY_VERSION__
+                 * @since  25.52.1
                  */
                 public function __construct()
                 {
@@ -66,7 +66,7 @@ return new class() implements
                 }
 
                 /**
-                 * @since  __DEPLOY_VERSION__
+                 * @since  25.52.1
                  */
                 public function install(InstallerAdapter $adapter): bool
                 {
@@ -81,7 +81,7 @@ return new class() implements
                 }
 
                 /**
-                 * @since  __DEPLOY_VERSION__
+                 * @since  25.52.1
                  */
                 public function update(InstallerAdapter $adapter): bool
                 {
@@ -89,7 +89,7 @@ return new class() implements
                 }
 
                 /**
-                 * @since  __DEPLOY_VERSION__
+                 * @since  25.52.1
                  */
                 public function uninstall(InstallerAdapter $adapter): bool
                 {
@@ -97,7 +97,7 @@ return new class() implements
                 }
 
                 /**
-                 * @since  __DEPLOY_VERSION__
+                 * @since  25.52.1
                  */
 
                 public function preflight(string $type, InstallerAdapter $adapter): bool
@@ -129,7 +129,7 @@ return new class() implements
                 }
 
                 /**
-                 * @since  __DEPLOY_VERSION__
+                 * @since  25.52.1
                  */
                 public function postflight(string $type, InstallerAdapter $adapter): bool
                 {
@@ -138,7 +138,7 @@ return new class() implements
 
                 /**
                  * Reloads the language from the installation package
-                 * @since  __DEPLOY_VERSION__
+                 * @since  25.52.1
                  */
                 private function loadLanguage(InstallerAdapter $adapter): void
                 {
