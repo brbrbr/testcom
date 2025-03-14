@@ -1,11 +1,11 @@
 <?php
 
 /**
- * @package     Joomla.Plugins
+ * @package    plg_task_deltrash
  * @subpackage  Task.DelTrash
  *
- * @copyright   Copyright (C) 2025 Bram Brambring (https://brambring.nl)
- * @license     GNU General Public License version 3 or later;
+ * @copyright 2025 Bram Brambring (https://brambring.nl)
+ * @license   GNU General Public License version 3 or later;
  */
 
 namespace Joomla\Plugin\Task\Deltrash\Extension;

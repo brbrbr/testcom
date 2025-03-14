@@ -2,9 +2,9 @@
 
 /**
  * @version   24.44.6882
- * @package    Tests
+ * @package    plg_task_deltrash
  * @author     Bram <bram@brokenlinkchecker.dev>
- * @copyright 2023 - 2024 Bram Brambring (https://brambring.nl)
+ * @copyright 2025 Bram Brambring (https://brambring.nl)
  * @license   GNU General Public License version 3 or later;
  */
 
@@ -19,7 +19,7 @@ use Joomla\Component\Scheduler\Administrator\Task\Task;
 /**
  * Test class for Contacts
  *
- * @package     Joomla.UnitTest
+ * @package    plg_task_deltrash
  * @subpackage  SiteStatus
 
  *

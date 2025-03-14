@@ -1,10 +1,10 @@
 <?php
 
 /**
- * @package    Joomla.UnitTest
+ * @package    plg_task_deltrash
  *
- * @copyright  (C) 2019 Open Source Matters, Inc. <https://www.joomla.org>
- * @license    GNU General Public License version 2 or later; see LICENSE.txt
+ * @copyright 2025 Bram Brambring (https://brambring.nl)
+ * @license   GNU General Public License version 3 or later;
  * @link       http://www.phpunit.de/manual/current/en/installation.html
  */
 
@@ -28,7 +28,7 @@ use PHPUnit\Framework\TestCase;
 /**
  * Base Unit Test case for common behaviour across unit tests
  *
- * @since   __DEPLOY_VERSION__
+ * @since   25.52.2
  */
 abstract class UnitTestCase extends TestCase
 {
