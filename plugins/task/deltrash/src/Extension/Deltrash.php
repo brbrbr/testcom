@@ -1,24 +1,22 @@
 <?php
 
 /**
- * @package    plg_task_deltrash
+ * @package     Joomla.Plugins
  * @subpackage  Task.DelTrash
  *
- * @copyright 2025 Bram Brambring (https://brambring.nl)
- * @license   GNU General Public License version 3 or later;
+ * @copyright   Copyright (C) 2025 Bram Brambring (https://brambring.nl)
+ * @license     GNU General Public License version 3 or later;
  */
 
 namespace Joomla\Plugin\Task\Deltrash\Extension;
 
-use Joomla\CMS\Application\ApplicationHelper;
+
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Table\Table;
-use Joomla\CMS\User\User;
 use Joomla\CMS\User\UserFactoryInterface;
-use Joomla\CMS\User\UserHelper;
 use Joomla\Component\Scheduler\Administrator\Event\ExecuteTaskEvent;
 use Joomla\Component\Scheduler\Administrator\Task\Status;
 use Joomla\Component\Scheduler\Administrator\Traits\TaskPluginTrait;
@@ -97,64 +95,54 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
      */
     public function deleteTrash(ExecuteTaskEvent $event): int
     {
-        $isTempUser = false;
-        $userID    = $event->getArgument('params')->user ?? false;
+      $params= $event->getArgument('params');
+
+        $userID    = $params->user ?? 0;
         if (!$userID) {
-            $userID    =  $this->createRootUser();
-            $isTempUser = $userID;
-        }
-        //createRootUser might fail
-        if ($userID) {
-            $this->loginById($userID);
-        } else {
-            return  false;
+            $this->logTask(Text::_('PLG_TASK_DELTRASH_USERREQUIRED'), 'error');
+            return Status::KNOCKOUT;
         }
 
-        if ($event->getArgument('params')->articles ?? false) {
+        $this->loginById($userID);
+
+
+        if ($params->articles ?? false) {
             $this->delArticles();
         }
 
-        if ($event->getArgument('params')->categories ?? false) {
-            $components = $event->getArgument('params')->components ?? [];
+        if ($params->categories ?? false) {
+            $components = $params->components ?? [];
 
             foreach ($components as $component) {
                 $this->delCategories($component);
             }
         }
 
-        if ($event->getArgument('params')->modules ?? false) {
-            $module = $event->getArgument('params')->moduletype ?? [];
+        if ($params->modules ?? false) {
+            $module = $params->moduletype ?? [];
             $this->delModules($module);
         }
 
-        if ($event->getArgument('params')->redirects ?? false) {
-            $purge = $event->getArgument('params')->redirectspurge ?? false;
+        if ($params->redirects ?? false) {
+            $purge = $params->redirectspurge ?? false;
             $this->delRedirects($purge);
         }
 
-        if ($event->getArgument('params')->tags ?? false) {
+        if ($params->tags ?? false) {
             $this->delTags();
         }
 
-        if ($event->getArgument('params')->tasks ?? false) {
+        if ($params->tasks ?? false) {
             $this->delTasks();
         }
 
-        if ($event->getArgument('params')->contacts ?? false) {
+        if ($params->contacts ?? false) {
             $this->delContacts();
         }
 
-        if ($event->getArgument('params')->menus ?? false) {
-            $menus = $event->getArgument('params')->menutype ?? [];
+        if ($params->menus ?? false) {
+            $menus = $params->menutype ?? [];
             $this->delMenuItems($menus);
-        }
-
-        if ($isTempUser !== false) {
-            //the newly created user. 
-            //unlikeley but getIdentity() might return a different one if some plugin changes the user.
-            $user = User::getInstance($isTempUser);
-            // Trigger delete of user
-            $user->delete();
         }
 
         return Status::OK;
@@ -170,9 +158,6 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
         $cmodel->setState('filter.published', -2);
         $cmodel->setState('filter.extension', $component);
         $cmodel->setState('category.extension', $component);
-        // Extract the component name
-        $parts = explode('.', $component);
-        $cmodel->setState('category.component', $parts[0]);
         $this->app->input->set('extension', $component);
 
         $ctrashed = $cmodel->getItems();
@@ -198,6 +183,7 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
             $this->logTask(Text::sprintf('PLG_TASK_DELTRASH_NOLEAF', $component, $noleaf), 'info');
         }
     }
+
 
     private function delArticles(): void
     {
@@ -445,6 +431,7 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
         /** @var \Joomla\Component\Contact\Administrator\Model\ContactModel $model */
         $amodel = $this->app->bootComponent('com_contact')
             ->getMVCFactory()->createModel('Contact', 'Administrator', ['ignore_request' => true]);
+           
         $amodel->setCurrentUser($this->app->getIdentity());
 
         foreach ($atrashed as $item) {
@@ -458,126 +445,6 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
         }
     }
 
-    /**
-     * Method to create a root user for the task.
-     *
-     * @param   object          $options  The session options.
-     * @param   DatabaseDriver  $db       Database connector object $db*.
-     *
-     * @return  boolean|int userId on success. false on failure
-     *
-     * @since   3.1
-     */
-    private function createRootUser(): int |  bool
-    {
-
-        $options = new \stdClass();
-        //generate a randuser name and password
-        $options->admin_password_plain = UserHelper::genRandomPassword();
-        //getHash gives a 32 long string. That fits easily in the column
-        $options->admin_user     =  ApplicationHelper::getHash(UserHelper::genRandomPassword());
-        $options->admin_username = $options->admin_user;
-        $options->admin_email    = 'aa@aa.it';
-
-
-        $cryptpass = UserHelper::hashPassword($options->admin_password_plain);
-
-        // Create the admin user.
-        date_default_timezone_set('UTC');
-        $installdate = date('Y-m-d H:i:s');
-        $db          = $this->getDatabase();
-
-        $query = $db->getQuery(true)
-            ->select($db->quoteName('id'))
-            ->from($db->quoteName('#__users'))
-            ->where($db->quoteName('username') . ' = ' . $db->quote($options->admin_username));
-
-        $db->setQuery($query);
-
-        try {
-            $result = $db->loadResult();
-        } catch (\RuntimeException $e) {
-            $this->logTask($e->getMessage(), 'error');
-
-            return false;
-        }
-
-        if ($result) {
-            $query->clear()
-                ->update($db->quoteName('#__users'))
-                ->set($db->quoteName('name') . ' = ' . $db->quote(trim($options->admin_user)))
-                ->set($db->quoteName('username') . ' = ' . $db->quote(trim($options->admin_username)))
-                ->set($db->quoteName('email') . ' = ' . $db->quote($options->admin_email))
-                ->set($db->quoteName('password') . ' = ' . $db->quote($cryptpass))
-                ->set($db->quoteName('block') . ' = 0')
-                ->set($db->quoteName('sendEmail') . ' = 1')
-                ->set($db->quoteName('registerDate') . ' = ' . $db->quote($installdate))
-                ->set($db->quoteName('lastvisitDate') . ' = NULL')
-                ->set($db->quoteName('activation') . ' = ' . $db->quote('0'))
-                ->set($db->quoteName('params') . ' = ' . $db->quote(''))
-                ->where($db->quoteName('id') . ' = ' . $db->quote($result));
-        } else {
-            $columns = [
-                $db->quoteName('name'),
-                $db->quoteName('username'),
-                $db->quoteName('email'),
-                $db->quoteName('password'),
-                $db->quoteName('block'),
-                $db->quoteName('sendEmail'),
-                $db->quoteName('registerDate'),
-                $db->quoteName('lastvisitDate'),
-                $db->quoteName('activation'),
-                $db->quoteName('params'),
-            ];
-            $query->clear()
-                ->insert('#__users', true)
-                ->columns($columns)
-                ->values(
-                    $db->quote(trim($options->admin_user)) . ', ' . $db->quote(trim($options->admin_username)) . ', ' .
-                        $db->quote($options->admin_email) . ', ' . $db->quote($cryptpass) . ', ' .
-                        $db->quote('0') . ', ' . $db->quote('1') . ', ' . $db->quote($installdate) . ', NULL, ' .
-                        $db->quote('0') . ', ' . $db->quote('')
-                );
-        }
-        $db->setQuery($query);
-
-        try {
-            $db->execute();
-            $userId = $result ?? $db->insertid();
-        } catch (\RuntimeException $e) {
-            $this->logTask($e->getMessage(), 'error');
-
-            return false;
-        }
-
-        // Map the super user to the Super Users group
-        $query->clear()
-            ->select($db->quoteName('user_id'))
-            ->from($db->quoteName('#__user_usergroup_map'))
-            ->where($db->quoteName('user_id') . ' = ' . $db->quote($userId));
-
-        $db->setQuery($query);
-
-        if (!$db->loadResult()) {
-            $query->clear()
-                ->insert($db->quoteName('#__user_usergroup_map'), false)
-                ->columns([$db->quoteName('user_id'), $db->quoteName('group_id')])
-                ->values($db->quote($userId) . ', 8');
-            $db->setQuery($query);
-
-            try {
-                $db->execute();
-            } catch (\RuntimeException $e) {
-                $this->logTask($e->getMessage(), 'error');
-
-                return false;
-            }
-        }
-
-
-
-        return $userId;
-    }
     private function loginById(int $userId): void
     {
         $user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($userId);

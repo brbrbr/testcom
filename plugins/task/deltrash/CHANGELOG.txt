@@ -1,0 +1,15 @@
+/**
+ * + Addition
+ * - Removal
+ * ^ Change
+ * # Fix
+ * ! Security
+ * L Language
+ * N Note
+ */
+
+
+25.52.2
++ Added phpunit tests
+^ Code improvements
+^ Require user set in task configuration. No automaticly generated user.
