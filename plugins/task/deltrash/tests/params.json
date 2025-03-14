@@ -1,0 +1,46 @@
+{
+    "individual_log": false,
+    "log_file": "",
+    "notifications": {
+        "success_mail": "0",
+        "notification_success_groups": [
+            "8"
+        ],
+        "failure_mail": "1",
+        "notification_failure_groups": [
+            "8"
+        ],
+        "fatal_failure_mail": "1",
+        "notification_fatal_groups": [
+            "8"
+        ],
+        "orphan_mail": "1",
+        "notification_orphan_groups                                       ": [
+            "8"
+        ]
+    },
+    "articles": 1,
+    "categories": 1,
+    "components": [
+        "com_banners",
+        "com_contact",
+        "com_content",
+        "com_newsfeeds",
+        "com_users"
+    ],
+    "contacts": 1,
+    "menus": 1,
+    "menutype": [
+        "site",
+        "admin"
+    ],
+    "modules": 1,
+    "moduletype": [
+        "site",
+        "admin"
+    ],
+    "redirects": 1,
+    "redirectspurge": 1,
+    "tags": 1,
+    "tasks": 1
+}
