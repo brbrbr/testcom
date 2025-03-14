@@ -10,23 +10,20 @@
 
 namespace Tests;
 
-
 use Joomla\CMS\Application\AdministratorApplication as Application;
 use Joomla\CMS\Application\CMSApplicationInterface;
 use Joomla\CMS\Event\Application\AfterInitialiseEvent;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\LanguageFactoryInterface;
+use Joomla\CMS\Log\Log;
+use Joomla\CMS\Log\Logger\InMemoryLogger;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Database\DatabaseInterface;
 use Joomla\DI\Container;
 use Joomla\Event\DispatcherInterface;
-use PHPUnit\Framework\TestCase;
 use Joomla\Plugin\Task\Deltrash\Extension\Deltrash;
-
-use Joomla\CMS\Log\Logger\InMemoryLogger;
-use Joomla\CMS\Log\Log;
-
+use PHPUnit\Framework\TestCase;
 
 /**
  * Base Unit Test case for common behaviour across unit tests
@@ -35,16 +32,15 @@ use Joomla\CMS\Log\Log;
  */
 abstract class UnitTestCase extends TestCase
 {
-
-    protected string $folder = '';
+    protected string $folder  = '';
     protected string $element = '';
-    protected string $class = '';
+    protected string $class   = '';
     protected DatabaseInterface $db;
     protected ?CMSApplicationInterface $app = null;
     protected DispatcherInterface $dispatcher;
     protected Container $container;
     protected string $fieldContext = '';
-    protected int $trashedState = -2;
+    protected int $trashedState    = -2;
 
     protected function getDispatcher()
     {
@@ -85,7 +81,6 @@ abstract class UnitTestCase extends TestCase
     {
 
         if ($this->app instanceof Application) {
-
             return;
         }
 
@@ -140,9 +135,9 @@ abstract class UnitTestCase extends TestCase
 
     protected function clearMemoryLogger()
     {
-        $loggerOptions = ['group'  => 'phpunit'];
-        $logger        = new InMemoryLogger($loggerOptions);
-        $protectedMethod = (fn() => static::$logEntries = []);
+        $loggerOptions   = ['group' => 'phpunit'];
+        $logger          = new InMemoryLogger($loggerOptions);
+        $protectedMethod = (fn () => static::$logEntries = []);
         $protectedMethod->call($logger);
     }
 
@@ -150,12 +145,12 @@ abstract class UnitTestCase extends TestCase
 
     public function assetLoggerInfo(int $count = 0, string $group = 'info'): void
     {
-        $loggerOptions = ['group'  => $group];
+        $loggerOptions = ['group' => $group];
         $logger        = new InMemoryLogger($loggerOptions);
         $logEntries    = $logger->getCollectedEntries();
         $this->assertEquals(
             $count,
-            count($logEntries),
+            \count($logEntries),
             join(
                 "\n",
                 array_column(

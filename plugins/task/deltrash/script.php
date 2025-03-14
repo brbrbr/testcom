@@ -20,13 +20,13 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Installer\InstallerAdapter;
 use Joomla\CMS\Installer\InstallerScriptInterface;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Log\Log;
 use Joomla\Database\DatabaseInterface;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 
-
 // phpcs:disable PSR12.Classes.AnonClassDeclaration
-return new class() implements
+return new class () implements
     ServiceProviderInterface {
     // phpcs:enable PSR12.Classes.AnonClassDeclaration
     public function register(Container $container): void
@@ -34,7 +34,7 @@ return new class() implements
         $container->set(
             InstallerScriptInterface::class,
             // phpcs:disable PSR12.Classes.AnonClassDeclaration
-            new class() implements
+            new class () implements
                 InstallerScriptInterface {
                 // phpcs:enable PSR12.Classes.AnonClassDeclaration
                 /**

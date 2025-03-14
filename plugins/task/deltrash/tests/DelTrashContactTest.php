@@ -13,9 +13,6 @@ declare(strict_types=1);
 namespace Tests;
 
 use Joomla\CMS\Access\Access;
-use Joomla\Plugin\Task\Deltrash\Extension\Deltrash;
-use Tests\UnitTestCase;
-use PHPUnit\Framework\Attributes;
 use Joomla\Component\Scheduler\Administrator\Event\ExecuteTaskEvent;
 use Joomla\Component\Scheduler\Administrator\Task\Task;
 
@@ -31,7 +28,7 @@ use Joomla\Component\Scheduler\Administrator\Task\Task;
 
 class DelTrashContactTest extends UnitTestCase
 {
-    private $contactStub = array('name' => 'test', 'alias' => 'test', 'version_note' => '', 'user_id' => '', 'published' => '1', 'catid' => '4', 'access' => 1, 'misc' => '', 'created_by' => '1', 'created_by_alias' => '', 'created' => '2024-03-09 16:04:13', 'modified' => '2024-03-09 16:04:13', 'publish_up' => '', 'publish_down' => '', 'metakey' => '', 'metadesc' => '', 'language' => '*', 'featured' => '0', 'image' => '', 'con_position' => '', 'email_to' => '', 'address' => '', 'suburb' => '', 'state' => '', 'postcode' => '', 'country' => '', 'telephone' => '', 'mobile' => '', 'fax' => '', 'webpage' => '', 'sortname1' => '', 'sortname2' => '', 'sortname3' => '', 'params' => array('show_contact_category' => '', 'show_contact_list' => '', 'show_tags' => '', 'show_info' => '', 'show_name' => '', 'show_position' => '', 'show_email' => '', 'add_mailto_link' => '', 'show_street_address' => '', 'show_suburb' => '', 'show_state' => '', 'show_postcode' => '', 'show_country' => '', 'show_telephone' => '', 'show_mobile' => '', 'show_fax' => '', 'show_webpage' => '', 'show_image' => '', 'show_misc' => '', 'allow_vcard' => '', 'show_articles' => '', 'articles_display_num' => '', 'show_profile' => '', 'contact_layout' => '', 'show_links' => '', 'linka_name' => '', 'linka' => '', 'linkb_name' => '', 'linkb' => '', 'linkc_name' => '', 'linkc' => '', 'linkd_name' => '', 'linkd' => '', 'linke_name' => '', 'linke' => '', 'show_email_form' => '', 'show_email_copy' => '', 'validate_session' => '', 'custom_reply' => '', 'redirect' => '',), 'metadata' => array('robots' => '', 'rights' => '',), 'schema' => array('extendJed' => '',), 'tags' => array(),);
+    private $contactStub = ['name' => 'test', 'alias' => 'test', 'version_note' => '', 'user_id' => '', 'published' => '1', 'catid' => '4', 'access' => 1, 'misc' => '', 'created_by' => '1', 'created_by_alias' => '', 'created' => '2024-03-09 16:04:13', 'modified' => '2024-03-09 16:04:13', 'publish_up' => '', 'publish_down' => '', 'metakey' => '', 'metadesc' => '', 'language' => '*', 'featured' => '0', 'image' => '', 'con_position' => '', 'email_to' => '', 'address' => '', 'suburb' => '', 'state' => '', 'postcode' => '', 'country' => '', 'telephone' => '', 'mobile' => '', 'fax' => '', 'webpage' => '', 'sortname1' => '', 'sortname2' => '', 'sortname3' => '', 'params' => ['show_contact_category' => '', 'show_contact_list' => '', 'show_tags' => '', 'show_info' => '', 'show_name' => '', 'show_position' => '', 'show_email' => '', 'add_mailto_link' => '', 'show_street_address' => '', 'show_suburb' => '', 'show_state' => '', 'show_postcode' => '', 'show_country' => '', 'show_telephone' => '', 'show_mobile' => '', 'show_fax' => '', 'show_webpage' => '', 'show_image' => '', 'show_misc' => '', 'allow_vcard' => '', 'show_articles' => '', 'articles_display_num' => '', 'show_profile' => '', 'contact_layout' => '', 'show_links' => '', 'linka_name' => '', 'linka' => '', 'linkb_name' => '', 'linkb' => '', 'linkc_name' => '', 'linkc' => '', 'linkd_name' => '', 'linkd' => '', 'linke_name' => '', 'linke' => '', 'show_email_form' => '', 'show_email_copy' => '', 'validate_session' => '', 'custom_reply' => '', 'redirect' => ''], 'metadata' => ['robots' => '', 'rights' => ''], 'schema' => ['extendJed' => ''], 'tags' => []];
     private $model;
     //the plugin calls it component - com_categories extensions
     protected $component = 'com_contact';
@@ -46,20 +43,20 @@ class DelTrashContactTest extends UnitTestCase
     }
 
     /**
-     * 
+     *
      * @return string[]
-     * 
-     * 
+     *
+     *
      */
     public function createEntry()
     {
         $stub = $this->contactStub;
         /* create a category entry with an 'other' extension */
         $stub['user_id'] = $this->app->getIdentity();
-        $stub['alias'] = 'phpunit-' . uniqid();
-        $stub['name'] = ucwords($this->component . ' ' . $stub['alias'], " -");
-        $result = $this->model->save($stub);
-        $msg = $this->model->getError() ?: '';
+        $stub['alias']   = 'phpunit-' . uniqid();
+        $stub['name']    = ucwords($this->component . ' ' . $stub['alias'], " -");
+        $result          = $this->model->save($stub);
+        $msg             = $this->model->getError() ?: '';
         $this->assertTrue($result, $msg);
         $pk = [
             'alias' => $stub['alias'],
@@ -78,9 +75,9 @@ class DelTrashContactTest extends UnitTestCase
     {
         //trash it
         //model takes id's only
-        $pks = [$pk['id']];
+        $pks    = [$pk['id']];
         $result = $this->model->publish($pks, $this->trashedState);
-        $msg = $this->model->getError() ?: '';
+        $msg    = $this->model->getError() ?: '';
         $this->assertTrue($result, $msg);
 
 
@@ -155,16 +152,16 @@ class DelTrashContactTest extends UnitTestCase
         $plugin = $this->bootPlugin();
 
         /** @phpstan-ignore method.notFound */
-        $protectedMethod = (fn() => $this->delContacts());
+        $protectedMethod = (fn () => $this->delContacts());
 
 
-      
+
         $pk = $this->createEntry();
         $protectedMethod->call($plugin);
 
         $contact = $this->model->getItem($pk);
         $this->assertNotFalse($contact);
-        $this->assetLoggerInfo(0,'error');
+        $this->assetLoggerInfo(0, 'error');
 
 
         $this->trashEntry($pk);

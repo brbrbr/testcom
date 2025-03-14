@@ -12,13 +12,8 @@ declare(strict_types=1);
 
 namespace Tests;
 
-
-
-use Joomla\Plugin\Task\Deltrash\Extension\Deltrash;
-use Tests\UnitTestCase;
-use PHPUnit\Framework\Attributes;
-use Joomla\Component\Categories\Administrator\Table\CategoryTable;
 use Joomla\CMS\Access\Access;
+use Joomla\Component\Categories\Administrator\Table\CategoryTable;
 use Joomla\Component\Scheduler\Administrator\Event\ExecuteTaskEvent;
 use Joomla\Component\Scheduler\Administrator\Task\Task;
 
@@ -37,23 +32,23 @@ class DelTrashCategoryTest extends UnitTestCase
     private $model;
     private $table;
     protected $entryStub = [
-        'id' => 0,
-        'parent_id' => '1',
-        'extension' => '',
-        'title' => '',
-        'alias' => '',
-        'version_note' => '',
-        'note' => '',
-        'description' => '',
-        'published' => '1',
-        'access' => 1,
-        'metadesc' => '',
-        'metakey' => '',
+        'id'              => 0,
+        'parent_id'       => '1',
+        'extension'       => '',
+        'title'           => '',
+        'alias'           => '',
+        'version_note'    => '',
+        'note'            => '',
+        'description'     => '',
+        'published'       => '1',
+        'access'          => 1,
+        'metadesc'        => '',
+        'metakey'         => '',
         'created_user_id' => '1',
-        'language' => '*',
-        'params' => ['category_layout' => '', 'image' => '', 'image_alt' => '',],
-        'metadata' => ['author' => '', 'robots' => '',],
-        'tags' => [],
+        'language'        => '*',
+        'params'          => ['category_layout' => '', 'image' => '', 'image_alt' => ''],
+        'metadata'        => ['author' => '', 'robots' => ''],
+        'tags'            => [],
     ];
     //the plugin calls it component - com_categories extensions
     protected $component = 'com_phpunit';
@@ -74,7 +69,7 @@ class DelTrashCategoryTest extends UnitTestCase
 
     protected function countCategories()
     {
-        $db = $this->getDatabase();
+        $db    = $this->getDatabase();
         $query = $db->createQuery();
         $query->select('count(*)')
             ->from($db->quoteName('#__categories'))
@@ -87,8 +82,8 @@ class DelTrashCategoryTest extends UnitTestCase
     /**
      * @param string $suffix
      * @return string[]
-     * 
-     * 
+     *
+     *
      */
     public function createEntry(string $suffix = '')
     {
@@ -96,14 +91,14 @@ class DelTrashCategoryTest extends UnitTestCase
         $stub = $this->entryStub;
         /* create a category entry with an 'other' extension */
         $stub['extension'] = $this->component . $suffix;
-        $stub['alias'] = 'phpunit-' . uniqid();
-        $stub['title'] = ucwords($this->component . ' ' . $stub['alias'], " -");
-        $result = $this->model->save($stub);
-        $msg = $this->model->getError() ?: '';
+        $stub['alias']     = 'phpunit-' . uniqid();
+        $stub['title']     = ucwords($this->component . ' ' . $stub['alias'], " -");
+        $result            = $this->model->save($stub);
+        $msg               = $this->model->getError() ?: '';
         $this->assertTrue($result, $msg);
         $pk = [
-            'extension' =>  $stub['extension'],
-            'alias' => $stub['alias'],
+            'extension' => $stub['extension'],
+            'alias'     => $stub['alias'],
         ];
 
         $result = $this->table->load($pk);
@@ -119,9 +114,9 @@ class DelTrashCategoryTest extends UnitTestCase
         //trash it
         //model takes id's only
         $pks = [$pk['id']];
-        $this->getApplication()->getInput()->set('extension',  $pk['extension']);
+        $this->getApplication()->getInput()->set('extension', $pk['extension']);
         $result = $this->model->publish($pks, $this->trashedState);
-        $msg = $this->model->getError() ?: '';
+        $msg    = $this->model->getError() ?: '';
         $this->assertTrue($result, $msg);
 
 
@@ -138,9 +133,9 @@ class DelTrashCategoryTest extends UnitTestCase
     public function testDeleteCategorydeleteTrashEvent()
     {
         $params = new \stdClass();
-       
+
         $plugin = $this->bootPlugin();
-      
+
         $event = ExecuteTaskEvent::create(
             'onExecuteTask',
             [
@@ -155,23 +150,23 @@ class DelTrashCategoryTest extends UnitTestCase
         $this->trashEntry($pkOurs);
         //nothing set
         $plugin->deleteTrash($event);
-        $this->assetLoggerInfo(1,'error');
+        $this->assetLoggerInfo(1, 'error');
         $this->clearMemoryLogger();
 
         $params->user =  $this->app->getIdentity()->id;
         $plugin->deleteTrash($event);
         $result = $this->table->load($pkOurs);
         $this->assertTrue($result);
-        $this->assetLoggerInfo(0,'info');
-        $this->assetLoggerInfo(0,'error');
+        $this->assetLoggerInfo(0, 'info');
+        $this->assetLoggerInfo(0, 'error');
 
         $params->categories = 1;
         $plugin->deleteTrash($event);
         $result = $this->table->load($pkOurs);
         //not deleted?
         $this->assertTrue($result);
-        $this->assetLoggerInfo(0,'info');
-        $this->assetLoggerInfo(0,'error');
+        $this->assetLoggerInfo(0, 'info');
+        $this->assetLoggerInfo(0, 'error');
 
         //category  set do but wrong component
         $params->components = [
@@ -182,12 +177,12 @@ class DelTrashCategoryTest extends UnitTestCase
         $result = $this->table->load($pkOurs);
         //not deleted?
         $this->assertTrue($result);
-        $this->assetLoggerInfo(0,'info');
-        $this->assetLoggerInfo(0,'error');
+        $this->assetLoggerInfo(0, 'info');
+        $this->assetLoggerInfo(0, 'error');
 
-        //category  set correct component  guest user 
+        //category  set correct component  guest user
         $this->setUser('phpunit-guest');
-        $params->user =  $this->app->getIdentity()->id;
+        $params->user       =  $this->app->getIdentity()->id;
         $params->components = [
             "com_other",
             $pkOurs['extension'],
@@ -196,12 +191,12 @@ class DelTrashCategoryTest extends UnitTestCase
         $result = $this->table->load($pkOurs);
         //deleted?
         $this->assertTrue($result);
-        $this->assetLoggerInfo(1,'info'); // NOLEAF
-        $this->assetLoggerInfo(0,'error');
+        $this->assetLoggerInfo(1, 'info'); // NOLEAF
+        $this->assetLoggerInfo(0, 'error');
         $this->clearMemoryLogger();
         //category  set correct component  valid user
         $this->setUser();
-        $params->user =  $this->app->getIdentity()->id;
+        $params->user       =  $this->app->getIdentity()->id;
         $params->components = [
             "com_other",
             $pkOurs['extension'],
@@ -210,16 +205,15 @@ class DelTrashCategoryTest extends UnitTestCase
         $result = $this->table->load($pkOurs);
         //deleted?
         $this->assertFalse($result);
-        $this->assetLoggerInfo(1,'info'); // DELETED
-        $this->assetLoggerInfo(0,'error');
-        
+        $this->assetLoggerInfo(1, 'info'); // DELETED
+        $this->assetLoggerInfo(0, 'error');
     }
     public function testDeleteCategory()
     {
 
         $plugin = $this->bootPlugin();
         /** @phpstan-ignore method.notFound */
-        $protectedMethod = (fn($extension) => $this->delCategories($extension));
+        $protectedMethod = (fn ($extension) => $this->delCategories($extension));
 
 
         //create 'other' stub an trashit

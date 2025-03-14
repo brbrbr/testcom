@@ -10,7 +10,6 @@
 
 namespace Joomla\Plugin\Task\Deltrash\Extension;
 
-
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
@@ -95,7 +94,7 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
      */
     public function deleteTrash(ExecuteTaskEvent $event): int
     {
-      $params= $event->getArgument('params');
+        $params = $event->getArgument('params');
 
         $userID    = $params->user ?? 0;
         if (!$userID) {
@@ -431,7 +430,7 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
         /** @var \Joomla\Component\Contact\Administrator\Model\ContactModel $model */
         $amodel = $this->app->bootComponent('com_contact')
             ->getMVCFactory()->createModel('Contact', 'Administrator', ['ignore_request' => true]);
-           
+
         $amodel->setCurrentUser($this->app->getIdentity());
 
         foreach ($atrashed as $item) {

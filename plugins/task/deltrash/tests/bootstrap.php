@@ -26,8 +26,8 @@ ini_set('precision', 14);
  * if you chose to create a custom version of that file.
  */
 $rootDirectory = getcwd();
-while ( !is_file($rootDirectory.'/configuration.php')  && $rootDirectory ) {
-	$rootDirectory=dirname($rootDirectory);
+while (!is_file($rootDirectory . '/configuration.php') && $rootDirectory) {
+    $rootDirectory = \dirname($rootDirectory);
 }
 
 if (!\defined('JPATH_BASE')) {
@@ -103,7 +103,7 @@ if (!class_exists('JLoader')) {
 // Setup the autoloaders.
 JLoader::setup();
 JLoader::registerNamespace('Tests', __DIR__);
-JLoader::registerNamespace('Joomla\Plugin\Task\Deltrash', __DIR__.'/../src');
+JLoader::registerNamespace('Joomla\Plugin\Task\Deltrash', __DIR__ . '/../src');
 
 // Create the Composer autoloader
 /** @var \Composer\Autoload\ClassLoader $loader */
