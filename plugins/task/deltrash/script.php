@@ -49,12 +49,12 @@ return new class () implements
                 /**
                  * @since  25.52.1
                  */
-                private DatabaseInterface $db;
+                private readonly DatabaseInterface $db;
 
                 /**
                  * @since  25.52.1
                  */
-                private CMSApplicationInterface $app;
+                private readonly CMSApplicationInterface $app;
 
                 /**
                  * @since  25.52.1
