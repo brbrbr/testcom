@@ -23,6 +23,9 @@ use Joomla\Database\ParameterType;
 use Joomla\Event\SubscriberInterface;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\Table\Content;
+use Joomla\CMS\Access\Access;
+
+
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -99,12 +102,13 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
 
         $userID    = $params->user ?? 0;
 
-        if (!$userID) {
-            $this->logTask(Text::_('PLG_TASK_DELTRASH_USERREQUIRED'), 'error');
-            return Status::KNOCKOUT;
+        if ($userID) {
+
+            $this->loginById($userID);
+        } else {
+            $this->setGrant();
         }
 
-        $this->loginById($userID);
 
 
         if ($params->articles ?? false) {
@@ -146,10 +150,7 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
             $this->delMenuItems($menus);
         }
 
-        //$user = User::getInstance($this->app->getIdentity()->id);
 
-        // Trigger delete of user
-        //$user->delete();
 
         return Status::OK;
     }
@@ -205,7 +206,7 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
         //    ->getMVCFactory()->createModel('Article', 'Administrator', ['ignore_request' => true]);
         // Dirty hack for the inafmous Workflow
         $table = new Content($this->getDatabase());
-     
+
         foreach ($atrashed as $item) {
             if ($table->delete($item->id)) {
                 $art++;
@@ -456,5 +457,31 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
     {
         $user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($userId);
         $this->app->loadIdentity($user);
+    }
+
+    private function setGrant(): void
+    {
+        // Get all usergroups with Super User access
+        $db = $this->db;
+        $query = $db->getQuery(true)
+            ->select([$db->qn('id')])
+            ->from($db->qn('#__usergroups'));
+        $groups = $db->setQuery($query)->loadColumn();
+
+        // Get the groups that are Super Users
+        $groups = array_filter($groups, function ($gid) {
+            return Access::checkGroup($gid, 'core.admin');
+        });
+
+        //loop in case there are groups withput users
+        foreach ($groups as $gid) {
+            $uids = Access::getUsersByGroup($gid);
+            if ($uids) {
+                $this->loginById($uids[0]);
+            }
+
+
+            break;
+        }
     }
 }
