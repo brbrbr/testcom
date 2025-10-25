@@ -14,8 +14,7 @@ use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\CMSPlugin;
-use Joomla\CMS\Table\Table;
-use Joomla\CMS\User\UserFactoryInterface;
+use Joomla\CMS\User\UserHelper;
 use Joomla\Component\Scheduler\Administrator\Event\ExecuteTaskEvent;
 use Joomla\Component\Scheduler\Administrator\Task\Status;
 use Joomla\Component\Scheduler\Administrator\Traits\TaskPluginTrait;
@@ -23,6 +22,10 @@ use Joomla\Database\DatabaseAwareInterface;
 use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Database\ParameterType;
 use Joomla\Event\SubscriberInterface;
+use Joomla\CMS\Access\Access;
+use Joomla\CMS\Factory;
+use Joomla\CMS\User\UserFactoryInterface;
+use Joomla\CMS\Table\Table;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -94,7 +97,9 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
      */
     public function deleteTrash(ExecuteTaskEvent $event): int
     {
-        $params = $event->getArgument('params');
+        //$this->createRootUser();
+
+        $this->setGrant();
 
         $userID    = $params->user ?? 0;
         if (!$userID) {
@@ -144,6 +149,11 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
             $this->delMenuItems($menus);
         }
 
+        //$user = User::getInstance($this->app->getIdentity()->id);
+
+        // Trigger delete of user
+        //$user->delete();
+
         return Status::OK;
     }
 
@@ -164,7 +174,7 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
         $model = $this->app->bootComponent('com_categories')
             ->getMVCFactory()
             ->createModel('Category', 'Administrator', ['ignore_request' => true]);
-        $model->setCurrentUser($this->app->getIdentity());
+        //$model->setCurrentUser($this->app->getIdentity());
 
         foreach ($ctrashed as $item) {
             if (!$model->delete($item->id)) {
@@ -286,7 +296,7 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
         /** @var \Joomla\Component\Modules\Administrator\Model\ModuleModel $model */
         $mmodel = $this->app->bootComponent('com_modules')->getMVCFactory()
             ->createModel('Module', 'Administrator', ['ignore_request' => true]);
-        $mmodel->setCurrentUser($this->app->getIdentity());
+        //$mmodel->setCurrentUser($this->app->getIdentity());
 
         foreach ($trashed as $item) {
             if ($mmodel->delete($item->id)) {
@@ -405,7 +415,7 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
         /** @var \Joomla\Component\Content\Administrator\Model\ArticleModel $model */
         $mmodel = $this->app->bootComponent('com_menus')
             ->getMVCFactory()->createModel('Item', 'Administrator', ['ignore_request' => true]);
-        $mmodel->setCurrentUser($this->app->getIdentity());
+        //$mmodel->setCurrentUser($this->app->getIdentity());
 
         foreach ($trashed as $item) {
             if ($mmodel->delete($item->id)) {
@@ -431,7 +441,7 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
         $amodel = $this->app->bootComponent('com_contact')
             ->getMVCFactory()->createModel('Contact', 'Administrator', ['ignore_request' => true]);
 
-        $amodel->setCurrentUser($this->app->getIdentity());
+        //$amodel->setCurrentUser($this->app->getIdentity());
 
         foreach ($atrashed as $item) {
             if ($amodel->delete($item->id)) {
@@ -449,4 +459,29 @@ final class Deltrash extends CMSPlugin implements SubscriberInterface, DatabaseA
         $user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($userId);
         $this->app->loadIdentity($user);
     }
+
+    private function setGrant() : void
+	{
+		// Get all usergroups with Super User access
+		$db = $this->db;
+		$query = $db->getQuery(true)
+			 ->select([$db->qn('id')])
+			->from($db->qn('#__usergroups'));
+		$groups = $db->setQuery($query)->loadColumn();
+
+		// Get the groups that are Super Users
+		$groups = array_filter($groups, function ($gid) {
+			return Access::checkGroup($gid, 'core.admin');
+		});
+
+		foreach ($groups as $gid)
+		{
+			$uids = Access::getUsersByGroup($gid);
+			$user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($uids[0]);
+			$this->app->getSession()->set('user', $user);
+            $this->app->loadIdentity($user);
+
+			break;
+		}
+	}
 }

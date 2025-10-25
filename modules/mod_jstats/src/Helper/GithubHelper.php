@@ -2,32 +2,25 @@
 
 /**
  * @package     Joomla.Site
- * @subpackage  mod_github
+ * @subpackage  mod_whosonline
  *
  * @copyright   (C) 2006 Open Source Matters, Inc. <https://www.joomla.org>
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
-namespace Joomla\Module\Github\Site\Helper;
+namespace Joomla\Module\Jstats\Site\Helper;
 
 \defined('_JEXEC') or die;
 
-use Joomla\CMS\Application\SiteApplication;
 use Joomla\CMS\Factory;
-use Joomla\Database\DatabaseAwareInterface;
-use Joomla\Database\DatabaseAwareTrait;
-use Joomla\Registry\Registry;
 
 /**
- * Helper for mod_github
+ * Helper for mod_whosonline
  *
  * @since  1.5
  */
-
-class GithubHelper implements DatabaseAwareInterface
+class GithubHelper
 {
-    use DatabaseAwareTrait;
-
     /**
      * Show online count
      *
@@ -35,14 +28,17 @@ class GithubHelper implements DatabaseAwareInterface
      *
      * @since   1.5
      **/
-    public function getGithubData(Registry $params, SiteApplication $app): array
+    public static function getData()
     {
-        $db     = $this->getDatabase();
-        $result = [];
+        $db = Factory::getDbo();
+
+        // Calculate number of guests and users
+        $result         = [];
+
 
         $query = $db->getQuery(true)
             ->select('DATE(execution) as date,
-			 openi as value, openp as value2')
+			 openi as value')
             ->from($db->quoteName('#__github_issues'))
             ->order('execution');
         $db->setQuery($query);
@@ -53,11 +49,11 @@ class GithubHelper implements DatabaseAwareInterface
             $datas = [];
         }
 
-        //foreach ($datas as $data) {
+        foreach ($datas as $data) {
             //$result['openi'][] = $data->openi*$ratio;
 
-        //}
+        }
 
-        return $datas;
+        return $result;
     }
 }
