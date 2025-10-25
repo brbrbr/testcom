@@ -6,15 +6,15 @@
     <element>deltrash</element>
     <type>plugin</type>
     <client>site</client>
-    <version>25.52.2</version>
-    <sha256>7530f59a3ebbc12963158dcff9b11b674ea40abe06f6887fa606ebbab15c3cce</sha256>
+    <version>25.52.3</version>
+    <sha256>050a842f3fe73fcdbd077e44da3df8240daa6c140a3b54ac1e6a2eb628628322</sha256>
     <maintainer>Bram Brambring</maintainer>
     <maintainerurl>https://brambring.nl</maintainerurl>
     <section>-</section>
     <folder>task</folder>
     <infourl title="brambring.nl - Joomla Extensions - plg_task_deltrash">https://brokenlinkchecker.dev/extensions/plg-task-deltrash</infourl>
     <downloads>
-      <downloadurl type="full" format="zip">https://github.com/brbrbr/testcom/releases/download/25.52.2/plg_task_deltrash.zip</downloadurl>
+      <downloadurl type="full" format="zip">https://github.com/brbrbr/testcom/releases/download/25.52.3/plg_task_deltrash.zip</downloadurl>
     </downloads>
     <tags>
       <tag>stable</tag>
