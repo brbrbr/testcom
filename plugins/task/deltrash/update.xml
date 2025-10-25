@@ -7,7 +7,7 @@
     <type>plugin</type>
     <client>site</client>
     <version>25.52.2</version>
-    <sha256>9abd6f3a275b30c8e7c76f9132169668086cb7e0f9bdc26e66e33da370a6465c</sha256>
+    <sha256>7530f59a3ebbc12963158dcff9b11b674ea40abe06f6887fa606ebbab15c3cce</sha256>
     <maintainer>Bram Brambring</maintainer>
     <maintainerurl>https://brambring.nl</maintainerurl>
     <section>-</section>
@@ -19,6 +19,6 @@
     <tags>
       <tag>stable</tag>
     </tags>
-    <targetplatform name="joomla" version="5\.(2|3|4)"/>
+    <targetplatform name="joomla" version="5\.(2|3|4)|6\.[01]"/>
   </update>
 </updates>

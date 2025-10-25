@@ -2,7 +2,7 @@
 <extension type="plugin" group="task" method="upgrade">
 	<name>plg_task_deltrash</name>
 	<author>Bram Brambring</author>
-	<creationDate>2025-03-14</creationDate>
+	<creationDate>2025-10-25</creationDate>
 	<copyright>Copyright (C) 2025 Bram Brambring (https://brambring.nl)</copyright>
 	<license>GNU General Public License version 3 or later;</license>
 	<authorEmail>bram@brokenlinkchecker.dev</authorEmail>
